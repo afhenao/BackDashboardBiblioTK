@@ -15,6 +15,8 @@ Parte del sistema BiblioTK (ver `../CLAUDE.md`). Entrega datos agregados para el
 - `src/middlewares/verificarSesion.js` — el mismo de Perfil/Materiales/Préstamos: busca la sesión de la cookie `token_acceso` en la tabla `sesiones` y pone `Cache-Control: no-store`
 - `src/middlewares/verificarRol.js` — `verificarSuperadmin`: 403 si la sesión no es `superadmin`
 - `src/router/routerBiblioTK.js`
+- `src/controllers/usuariosController.js` — `listarUsuarios` y `cambiarRol`
+- `src/utils/notificar.js` — avisa `usuario.rolCambiado` a NotificacionesBiblioTK (sin esperar respuesta)
 - `src/controllers/dashboardController.js` — `obtenerDashboard`. Los errores se pasan con `next(error)`.
 
 ## Endpoints
@@ -23,6 +25,10 @@ Parte del sistema BiblioTK (ver `../CLAUDE.md`). Entrega datos agregados para el
 |---|---|---|---|
 | GET | `/DashboardBibliotk/health` | inline | `{ message }` |
 | GET | `/DashboardBibliotk/Udashboard` | `obtenerDashboard` (sesión `superadmin`) | `{ roles: { admin, usuario, superadmin } }`; sin sesión 401, otro rol 403 |
+| GET | `/DashboardBibliotk/Usuarios` | `listarUsuarios` (sesión `superadmin`) | `{ usuarios: [{ id, nombres, apellidos, email, nombreUsuario, rol, activo, fechaRegistro, esYo }] }` (nunca la contraseña) |
+| PUT | `/DashboardBibliotk/Usuarios/:id/rol` | `cambiarRol` (sesión `superadmin`) | Body `{ rol }` → `{ message, usuario }`. 409 si es la propia cuenta o si dejaría el sistema sin bibliotecario; 400 con un rol que no existe |
+
+Todas las rutas menos `/health` pasan por `verificarSesion` + `verificarSuperadmin` (`router.use`). El cambio de rol vale de inmediato: la sesión de esa cuenta lee el rol de la BD en cada petición, y NotificacionesBiblioTK le corta los sockets para que su app la lleve a la app del rol nuevo.
 
 `obtenerDashboard` hace un `LEFT JOIN` de una lista fija de roles contra `usuarios`, así los roles sin usuarios devuelven 0. La usa `BiblioTK-front-superadmin/src/service/UserService.js` (con `credentials: "include"`) → página `UserDashboard.jsx`.
 
