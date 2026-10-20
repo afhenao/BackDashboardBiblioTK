@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import routerBiblioTK from './router/routerBiblioTK.js';
 import { testConnection } from './config/db.js';
@@ -24,6 +25,8 @@ const allowedOrigins = [
 ];
 
 app.use(express.json());
+// La cookie token_acceso (la emite InicioSesionBiblioTK) la lee verificarSesion
+app.use(cookieParser());
 app.use(cors({
     origin: allowedOrigins,
     credentials: true,
