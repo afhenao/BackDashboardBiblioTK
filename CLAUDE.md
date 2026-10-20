@@ -4,6 +4,7 @@ Parte del sistema BiblioTK (ver `../CLAUDE.md`). Entrega datos agregados para el
 
 - **Puerto:** 3004 (`PORT` en `.env`; el 3002 es de PerfilBiblioTK)
 - **Arranque:** `npm run dev` (`node --watch src/app.js`, se recarga solo)
+- **Docker:** `Dockerfile` (node:24-alpine, solo dependencias de producción, usuario `node`, sin `.env`: la configuración llega por variables de entorno). Se orquesta desde `../InfraBiblioTK` (Compose y Kubernetes).
 - **Dependencias clave:** express 5, mysql2, cookie-parser, cors, dotenv (versiones fijas, sin `^`)
 - **Postman:** colección en `postman/` y `.postman/`
 
